@@ -11,7 +11,7 @@ import ImageComposer from './components/ImageComposer.vue'
       <ImageComposer />
     </main>
     <footer>
-      <p>©2025 清正</p>
+      <p>©2025</p>
     </footer>
   </div>
 </template>
