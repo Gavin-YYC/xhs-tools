@@ -28,7 +28,7 @@
         <div class="preview-area">
           <h2>预览区</h2>
           <p v-if="!hasBackground && !hasForeground" class="empty-message">请导入背景图和前景图</p>
-          <image-editor v-if="hasBackground || hasForeground" ref="imageEditorRef" />
+          <perspective-editor v-if="hasBackground || hasForeground" ref="perspectiveEditorRef" />
         </div>
       </div>
 
@@ -91,7 +91,7 @@ import { ref, computed, nextTick } from 'vue'
 import { useImageStore } from '../stores/imageStore'
 import { ElMessage } from 'element-plus'
 import { Picture as IconPicture, Download } from '@element-plus/icons-vue'
-import ImageEditor from './ImageEditor.vue'
+import PerspectiveEditor from './PerspectiveEditor.vue'
 import JSZip from 'jszip'
 import { saveAs } from 'file-saver'
 
@@ -100,7 +100,7 @@ const imageStore = useImageStore()
 // 引用DOM元素
 const backgroundInputRef = ref<HTMLInputElement | null>(null)
 const foregroundInputRef = ref<HTMLInputElement | null>(null)
-const imageEditorRef = ref<InstanceType<typeof ImageEditor> | null>(null)
+const perspectiveEditorRef = ref<InstanceType<typeof PerspectiveEditor> | null>(null)
 
 // 计算属性
 const hasBackground = computed(() => !!imageStore.backgroundImage)
@@ -181,7 +181,7 @@ async function onForegroundsSelected(event: Event) {
 
 // 合成图片
 async function composeImages() {
-  if (!canCompose.value || !imageEditorRef.value) {
+  if (!canCompose.value || !perspectiveEditorRef.value) {
     ElMessage.warning('请先导入背景图和前景图')
     return
   }
@@ -196,7 +196,7 @@ async function composeImages() {
     const composedImagesList: string[] = []
 
     // 获取第一张前景图与背景图的合成结果
-    const firstComposed = imageEditorRef.value.getCanvasData()
+    const firstComposed = perspectiveEditorRef.value.getCanvasData()
     if (!firstComposed) {
       ElMessage.error('获取画布数据失败')
       loadingInstance.close()
@@ -212,7 +212,7 @@ async function composeImages() {
       for (let i = 1; i < imageStore.foregroundImages.length; i++) {
         const foregroundFile = imageStore.foregroundImages[i]
         // 使用每张前景图单独合成
-        const composedImage = await imageEditorRef.value.composeWithForeground(foregroundFile)
+        const composedImage = await perspectiveEditorRef.value.composeWithForeground(foregroundFile)
 
         if (composedImage) {
           composedImagesList.push(composedImage)
