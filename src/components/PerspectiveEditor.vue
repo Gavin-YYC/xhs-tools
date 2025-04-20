@@ -383,49 +383,28 @@ function startDragPoint(event: MouseEvent, index: number) {
   event.preventDefault()
 }
 
-// 防抖函数，优化鼠标移动时的频繁渲染
-let animationFrameId = 0
-function debounce(callback: Function, delay = 5) {
-  if (animationFrameId) {
-    cancelAnimationFrame(animationFrameId)
-  }
-  animationFrameId = window.requestAnimationFrame(() => {
-    callback()
-  })
+let canvasRect: DOMRect | null = null
+function getCanvasRect(): DOMRect {
+  if (canvasRect) return canvasRect
+  canvasRect = canvasContainer.value!.getBoundingClientRect()
+  return canvasRect
 }
 
 // 鼠标移动处理 - 使用防抖优化
 function onMouseMove(event: MouseEvent) {
   if (!isDragging.value || activePointIndex.value === -1 || !canvasContainer.value) return
-
-  debounce(() => {
-    // 获取画布容器的位置
-    const rect = canvasContainer.value!.getBoundingClientRect()
-
-    // 计算鼠标相对于画布的位置
-    const x = event.clientX - rect.left
-    const y = event.clientY - rect.top
-
-    // 更新控制点位置
-    controlPoints.value[activePointIndex.value] = { x, y }
-
-    // 只重绘前景图，不重绘背景图
-    renderForegroundOnly()
-  })
+  const rect = getCanvasRect()
+  const x = event.clientX - rect.left
+  const y = event.clientY - rect.top
+  controlPoints.value[activePointIndex.value] = { x, y }
+  renderForegroundOnly()
 }
 
 // 只重绘前景图（透视变换）
 function renderForegroundOnly() {
   if (!fgCtx.value || !offscreenCanvas.value) return
-
   if (isRenderPending.value) return
-
-  isRenderPending.value = true
-  requestAnimationFrame(() => {
-    // 应用透视变换
-    applyPerspectiveTransform()
-    isRenderPending.value = false
-  })
+  applyPerspectiveTransform()
 }
 
 // 鼠标释放处理
@@ -533,10 +512,6 @@ onBeforeUnmount(() => {
   window.removeEventListener('resize', resizeCanvas)
   document.removeEventListener('mousemove', onMouseMove)
   document.removeEventListener('mouseup', onMouseUp)
-
-  if (animationFrameId) {
-    cancelAnimationFrame(animationFrameId)
-  }
 })
 
 // 暴露组件方法，供父组件调用
