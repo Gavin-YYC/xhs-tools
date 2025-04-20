@@ -1,12 +1,9 @@
 <script setup lang="ts">
-import ImageComposer from './components/ImageComposer.vue'
+import ImageComposer from './pages/ImageComposer/index.vue'
 </script>
 
 <template>
   <div class="app-container">
-    <header>
-      <h1>图片批量合成工具</h1>
-    </header>
     <main>
       <ImageComposer />
     </main>

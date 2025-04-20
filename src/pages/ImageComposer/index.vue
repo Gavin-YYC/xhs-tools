@@ -7,7 +7,9 @@
           <el-button type="primary" @click="importBackground">导入背景图</el-button>
           <el-button type="primary" @click="importForegrounds">批量导入前景图</el-button>
           <el-button type="success" @click="composeImages" :disabled="!canCompose">合成</el-button>
-          <el-button type="warning" @click="downloadImages" :disabled="!hasComposedImages">下载</el-button>
+          <el-button type="warning" @click="downloadImages" :disabled="!hasComposedImages"
+            >下载</el-button
+          >
         </div>
 
         <div class="image-info" v-if="hasBackground || hasForeground">
@@ -26,8 +28,7 @@
     <div class="right-panel">
       <div class="preview-container">
         <div class="preview-area">
-          <h2>预览区</h2>
-          <p v-if="!hasBackground && !hasForeground" class="empty-message">请导入背景图和前景图</p>
+          <p v-if="!hasBackground && !hasForeground">请导入背景图和前景图</p>
           <perspective-editor v-if="hasBackground || hasForeground" ref="perspectiveEditorRef" />
         </div>
       </div>
@@ -43,7 +44,8 @@
                 :preview-src-list="composedImages"
                 :initial-index="index"
                 :hide-on-click-modal="false"
-                alt="合成结果">
+                alt="合成结果"
+              >
                 <template #error>
                   <div class="image-error">
                     <el-icon><icon-picture /></el-icon>
@@ -57,7 +59,8 @@
                   size="small"
                   circle
                   @click.stop="downloadSingleImage(image, index)"
-                  title="下载此图片">
+                  title="下载此图片"
+                >
                   <el-icon><download /></el-icon>
                 </el-button>
               </div>
@@ -88,10 +91,10 @@
 
 <script setup lang="ts">
 import { ref, computed, nextTick } from 'vue'
-import { useImageStore } from '../stores/imageStore'
+import { useImageStore } from '@/stores/imageStore'
 import { ElMessage } from 'element-plus'
 import { Picture as IconPicture, Download } from '@element-plus/icons-vue'
-import PerspectiveEditor from './PerspectiveEditor.vue'
+import PerspectiveEditor from '@/pages/ImageComposer/PerspectiveEditor.vue'
 import JSZip from 'jszip'
 import { saveAs } from 'file-saver'
 
@@ -190,7 +193,7 @@ async function composeImages() {
     // 显示加载提示
     const loadingInstance = ElMessage.info({
       message: '正在合成图片，请稍候...',
-      duration: 0
+      duration: 0,
     })
 
     const composedImagesList: string[] = []
@@ -243,7 +246,7 @@ async function downloadImages() {
     // 显示加载提示
     const loadingInstance = ElMessage.info({
       message: '正在打包图片，请稍候...',
-      duration: 0
+      duration: 0,
     })
 
     // 创建一个新的JSZip实例
@@ -262,12 +265,12 @@ async function downloadImages() {
     await Promise.all(promises)
 
     // 生成zip文件
-    const content = await zip.generateAsync({ 
+    const content = await zip.generateAsync({
       type: 'blob',
       compression: 'DEFLATE',
       compressionOptions: {
-        level: 6 // 压缩级别，1-9
-      }
+        level: 6, // 压缩级别，1-9
+      },
     })
 
     // 下载zip文件
@@ -357,18 +360,13 @@ function downloadSingleImage(dataUrl: string, index: number) {
 }
 
 .preview-area {
-  background-color: #fff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   border-radius: 8px;
   padding: 20px;
   box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
   min-height: 460px;
-}
-
-.empty-message {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 400px;
   color: #999;
   font-size: 16px;
   background-color: #f9f9f9;
@@ -443,4 +441,4 @@ h2 {
   font-size: 24px;
   margin-bottom: 8px;
 }
-</style> 
+</style>

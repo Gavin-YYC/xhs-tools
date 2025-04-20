@@ -8,4 +8,9 @@ dotenv.config()
 export default defineConfig({
   plugins: [vue()],
   base: `/${process.env.URL_PREFIX_PATH}/`,
+  resolve: {
+    alias: {
+      '@': '/src',
+    },
+  },
 })
