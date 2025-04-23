@@ -56,6 +56,9 @@ const isDragging = ref(false)
 const isDraggingForeground = ref(false)
 const dragStartPos = ref({ x: 0, y: 0 })
 
+// 控制是否跳过控制点更新
+const skipControlPointsUpdate = ref(false)
+
 // 画布尺寸
 const canvasWidth = ref(800)
 const canvasHeight = ref(600)
@@ -208,6 +211,9 @@ async function loadForegroundImage(image: File) {
 
 // 更新控制点位置
 function updateControlPoints() {
+  // 如果设置了跳过标志，则不更新控制点
+  if (skipControlPointsUpdate.value) return
+
   if (!canvasContainer.value) return
 
   const width = canvasWidth.value
@@ -406,18 +412,42 @@ async function composeWithForeground(foregroundFile: File): Promise<string | nul
     // 保存当前状态
     const currentForegroundImg = foregroundImg.value
 
+    // 深拷贝当前控制点位置
+    const currentControlPoints = JSON.parse(JSON.stringify(controlPoints.value))
+
     // 加载新的前景图
     const newImg = await loadImage(foregroundFile)
 
     // 临时替换前景图
     foregroundImg.value = newImg
 
-    // 使用当前的控制点进行合成
+    // 手动等待一小段时间，确保前景图已加载
+    await new Promise(resolve => setTimeout(resolve, 50))
 
-    // 获取合成结果
+    // 手动应用保存的控制点位置
+    controlPoints.value = currentControlPoints
+
+    // 使用当前的控制点进行合成
+    if (threeRenderer.value) {
+      // 手动等待一小段时间，确保前景图的网格已经被创建
+      await new Promise(resolve => setTimeout(resolve, 100))
+
+      // 获取合成结果
+      const result = getCanvasData()
+
+      // 恢复原来的前景图
+      foregroundImg.value = currentForegroundImg
+
+      // 等待前景图更新回原始状态
+      await new Promise(resolve => setTimeout(resolve, 100))
+
+      return result
+    }
+
+    // 如果没有渲染器，只能尝试获取当前状态
     const result = getCanvasData()
 
-    // 恢复原来的前景图和控制点
+    // 恢复原来的前景图
     foregroundImg.value = currentForegroundImg
 
     return result
