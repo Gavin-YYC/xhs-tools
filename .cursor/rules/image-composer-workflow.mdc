@@ -1,0 +1,26 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# Image Composer Workflow
+
+This rule outlines the workflow for the image composition system.
+
+## Application Flow:
+1. User imports a background image
+2. User imports one or more foreground images
+3. User adjusts the perspective of the foreground image
+4. System composes all foreground images with the background image
+5. User can download individual or all composed images
+
+## Key Components:
+- [ImageComposer/index.vue](mdc:src/pages/ImageComposer/index.vue) - Main container component
+- [PerspectiveEditor.vue](mdc:src/pages/ImageComposer/PerspectiveEditor.vue) - Handles perspective transformation
+- [imageStore.ts](mdc:src/stores/imageStore.ts) - Manages state for images
+
+## Implementation Notes:
+- Control points for the first foreground image are preserved and applied to all subsequent images
+- Use `skipControlPointsUpdate` flag to prevent automatic control point repositioning
+- The ThreeRenderer component handles the actual composition using Three.js
+- When implementing new features, ensure proper cleanup in component unmount hooks

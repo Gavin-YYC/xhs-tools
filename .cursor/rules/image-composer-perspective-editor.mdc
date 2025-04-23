@@ -1,0 +1,27 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# Image Composer - Perspective Editor
+
+The [PerspectiveEditor.vue](mdc:src/pages/ImageComposer/PerspectiveEditor.vue) component handles interactive perspective transformation of foreground images over a background image.
+
+## Key functionality:
+- Allows users to adjust control points to change the perspective of foreground images
+- Manages dragging of individual control points and the entire foreground image
+- Handles composition of multiple foreground images with a single background image
+
+## Important notes:
+- When setting `foregroundImg.value`, use `skipControlPointsUpdate.value = true` to prevent automatic repositioning of control points
+- The `composeWithForeground` function applies the same control points to all foreground images
+- Make sure to set `skipControlPointsUpdate.value = false` after completing operations that temporarily change the foreground image
+
+## Component workflow:
+1. User loads background and foreground images
+2. User adjusts control points on the first foreground image
+3. On composition, those control points are preserved and applied to all subsequent foreground images
+
+## Related components:
+- [ThreeRenderer.vue](mdc:src/pages/ImageComposer/perspective/ThreeRenderer.vue) - Handles actual 3D rendering
+- [ControlPoints.vue](mdc:src/pages/ImageComposer/perspective/ControlPoints.vue) - UI for the control points

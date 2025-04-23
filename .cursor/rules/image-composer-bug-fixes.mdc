@@ -1,0 +1,41 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# Image Composer Bug Fixes
+
+This document outlines common issues in the Image Composer application and their solutions.
+
+## Multiple Foreground Images Issue
+**Problem:** When composing multiple foreground images, subsequent images don't use the control points from the first image.
+
+**Solution:** In [PerspectiveEditor.vue](mdc:src/pages/ImageComposer/PerspectiveEditor.vue):
+1. Use the `skipControlPointsUpdate` flag to prevent automatic repositioning of control points
+2. Save and restore the control points when switching foreground images
+3. Wait for sufficient time after changing foreground images to ensure proper rendering
+
+## Function Reassignment Issue
+**Problem:** Cannot directly reassign a function declaration like `updateControlPoints = tempUpdateControlPoints`.
+
+**Solution:** Use a reactive flag variable instead:
+```javascript
+// Add this to component data:
+const skipControlPointsUpdate = ref(false)
+
+// Modify the updateControlPoints function:
+function updateControlPoints() {
+  if (skipControlPointsUpdate.value) return
+  // Original function code...
+}
+
+// In composeWithForeground:
+skipControlPointsUpdate.value = true
+// Do operations...
+skipControlPointsUpdate.value = false
+```
+
+## Memory Leaks
+**Problem:** Three.js resources not properly disposed causing memory leaks.
+
+**Solution:** Ensure proper cleanup in `onBeforeUnmount` hooks in both PerspectiveEditor and ThreeRenderer components.

@@ -1,0 +1,27 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# Three.js Renderer Component
+
+The [ThreeRenderer.vue](mdc:src/pages/ImageComposer/perspective/ThreeRenderer.vue) component is responsible for the 3D rendering of images with perspective transformation.
+
+## Core Functionality:
+- Creates and manages a Three.js scene, camera, and renderer
+- Renders background and foreground images as textured planes
+- Applies perspective transformation to the foreground image based on control points
+- Provides methods to obtain the final composed image
+
+## Key Methods:
+- `render()` - Renders the current scene
+- `getCanvasData()` - Returns the composed image as a data URL
+- `createBackgroundMesh()` - Sets up the background image mesh
+- `createForegroundMesh()` - Sets up the foreground image mesh
+- `updatePerspective()` - Updates the foreground mesh based on control points
+
+## Implementation Notes:
+- Uses shallowRef for Three.js objects to prevent Vue reactivity issues
+- Properly disposes of Three.js resources on component unmount
+- Control points are in screen coordinates and converted to normalized device coordinates
+- High-quality rendering uses increased pixel ratio for export
